@@ -26,9 +26,21 @@ void intercalar(int entrada[], int inicio1, int inicio2, int fim2){
         tmp[k] = entrada[j];
         j++;
     }     
+    //copy
     entrada = tmp;
+}
+
+void ordenarIntercalacao(int entrada[], int esquerda, int direita){
+    if(esquerda<direita){
+        int meio = (esquerda+direita)/2;
+        ordenarIntercalacao(entrada,esquerda, meio);
+        ordenarIntercalacao(entrada,meio+1, direita);
+        intercalar(entrada, esquerda, meio+1, direita);
+    }
 }
 
 void ordenar(int entrada[], int tamanho){
     //Já sei como intercalar mas como conseguir dois vetores ordenados?
+    //tem que chamar aqui o ordenarIntercalacao
+
 }
