@@ -14,5 +14,6 @@ void ordenar(string array[], int tamanho){
             array[i] = array[min];
             array[min]= aux;
         }
+        
     }
 }
