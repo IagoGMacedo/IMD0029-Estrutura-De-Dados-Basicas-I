@@ -8,6 +8,7 @@ Dicionario::Dicionario(const int capacidade)
 
 Dicionario::~Dicionario()
 {
+    delete []this->elementos;
     // TO-DO
 }
 
