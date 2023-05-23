@@ -32,9 +32,8 @@ bool Conjunto::inserir(int elemento)
         this->elementos[quantidade] = elemento;
         this->quantidade++;
         return true;
-    } else{
-        return false;
-    }
+    } 
+    return false;
 }
 
 bool Conjunto::remover(int elemento)
