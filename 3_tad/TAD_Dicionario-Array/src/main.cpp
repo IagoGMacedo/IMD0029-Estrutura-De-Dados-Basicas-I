@@ -29,12 +29,7 @@ int main()
     
     d.imprimir();
   }
-  d.remover("a");
-  std::cout << "quantidade final: " << d.tamanho() << std::endl;
-  std::cout << "retorno final: " << *d.buscar("b") << std::endl;
-  d.remover("b");
-  std::cout << "retorno do removido: " << d.buscar("b") << std::endl;
-  d.imprimir();
+  
 
   return 0;
 }

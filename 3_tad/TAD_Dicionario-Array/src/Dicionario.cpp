@@ -5,6 +5,7 @@ Dicionario::Dicionario(const int capacidade)
 {
     this->elementos = new Par[capacidade];
     this->quantidade = 0;
+    this->capacidade = capacidade;
 }
 
 Dicionario::~Dicionario()
@@ -20,7 +21,7 @@ bool Dicionario::inserir(const std::string& chave, const int& valor)
             this->elementos[this->quantidade] = novoPar;
             this->quantidade++;
             return true;
-        }
+        } 
     }
     return false;
 }

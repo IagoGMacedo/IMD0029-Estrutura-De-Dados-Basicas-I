@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Wextra -Werror -pedantic -std=c++14 -Iinclude
+CFLAGS = -Wall -Wextra  -pedantic -std=c++17 -Iinclude
 SOURCES = $(wildcard src/*.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 EXECUTABLE = bin/main
