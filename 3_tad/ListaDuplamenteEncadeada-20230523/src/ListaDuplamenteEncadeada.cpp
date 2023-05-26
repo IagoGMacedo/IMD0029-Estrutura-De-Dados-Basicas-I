@@ -22,12 +22,15 @@ ListaDuplamenteEncadeada::ListaDuplamenteEncadeada()
 
 ListaDuplamenteEncadeada::~ListaDuplamenteEncadeada()
 {
+	// este trecho está causando segmentation fault
+	/*
 	No<std::string>* noRemover = this->cabeca->getProximo();
 	while(noRemover->getProximo() != this->cauda){
 		//não apaga cabeca nem cauda, incluir eles depois
 		delete []noRemover;
 		noRemover = noRemover->getProximo();
 	}
+	*/
 }
 
 No<std::string>* ListaDuplamenteEncadeada::getCabeca(void)
@@ -68,7 +71,7 @@ std::string ListaDuplamenteEncadeada::recuperar(int i)
 int ListaDuplamenteEncadeada::buscar(std::string s)
 {
 	No<std::string>* noAtual = new No<std::string>();
-	noAtual = this->cabeca->getProximo();
+	noAtual = this->cabeca;
 	int contador = 1;
 	while(noAtual->getProximo() != this->getCauda()){
 		if(noAtual->getValor()==s){
@@ -77,6 +80,7 @@ int ListaDuplamenteEncadeada::buscar(std::string s)
 		contador++;
 		noAtual = noAtual->getProximo();
 	}
+	// eu deveria alterar aqui pra ficar NULL e poder usar como bool ou deixa quieto?
 	return -1;
 }
 
@@ -124,24 +128,31 @@ bool ListaDuplamenteEncadeada::inserirNaCauda(std::string s)
 
 bool ListaDuplamenteEncadeada::inserir(int i, std::string s)
 {    
-	if(!this->buscar(s)){
-		No<std::string>* novo = new No<std::string>(s);
-		No<std::string>* noPercorrendo = this->cabeca->getProximo();
-		int contador = 1;
-		while(noPercorrendo->getProximo() != this->cauda){
-			if(contador==i){
-				novo->setAnterior(noPercorrendo);
-				novo->setProximo(noPercorrendo->getProximo());
 
-				novo->getAnterior()->setProximo(novo);
-				novo->getProximo()->setAnterior(novo);
-				this->quantidade++;
-				return true;
+	if(this->buscar(s)==-1 && i<=this->quantidade+1){
+		if(this->quantidade==0){
+			this->inserirNaCabeca(s);
+			return true;
+		} else{
+			No<std::string>* novo = new No<std::string>(s);
+			//tem que começar apontando pra cabeça pra usar o getProximo()
+			No<std::string>* noPercorrendo = this->cabeca;
+			int contador = 1;
+			while(noPercorrendo->getProximo() != this->cauda){
+				if(contador==i){
+					novo->setAnterior(noPercorrendo);
+					novo->setProximo(noPercorrendo->getProximo());
 
+					//esse trecho de código não funciona para inserir na 1 execução do codigo
+					novo->getAnterior()->setProximo(novo);
+					novo->getProximo()->setAnterior(novo);
+					this->quantidade++;
+					return true;
+				}
+				contador++;
 			}
 		}
 	}
-	
 	return false;
 }
 
