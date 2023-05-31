@@ -55,25 +55,26 @@ bool ListaDuplamenteEncadeada::vazia(void)
 
 std::string ListaDuplamenteEncadeada::recuperar(int i)
 {
-	No<std::string>* noAtual = this->cabeca->getProximo();
 	//noAtual = this->cabeca->getProximo();
-	int contador = 1;
-	while(noAtual->getProximo() != this->getCauda()){
-		if(contador==i){
-			return noAtual->getValor();
+	if(i<=this->quantidade){
+		No<std::string>* noAtual = this->cabeca->getProximo();
+		int contador = 1;
+		while(noAtual != this->getCauda()){
+			if(contador==i){
+				return noAtual->getValor();
+			}
+			contador++;
+			noAtual = noAtual->getProximo();
 		}
-		contador++;
-		noAtual = noAtual->getProximo();
 	}
 	return "";
 }
 
 int ListaDuplamenteEncadeada::buscar(std::string s)
 {
-	No<std::string>* noAtual = new No<std::string>();
-	noAtual = this->cabeca;
+	No<std::string>* noAtual = this->cabeca->getProximo();
 	int contador = 1;
-	while(noAtual->getProximo() != this->getCauda()){
+	while(noAtual != this->getCauda()){
 		if(noAtual->getValor()==s){
 			return contador;
 		}
@@ -86,7 +87,10 @@ int ListaDuplamenteEncadeada::buscar(std::string s)
 
 int ListaDuplamenteEncadeada::buscarMF(std::string s)
 {
-	//dont know what to do
+	//buscar elemento na lista e mover pra frente
+	if(this->inserirNaCabeca(this->remover(this->buscar(s)))){
+		return 1;
+	}
 	return -1;
 }
 
@@ -105,7 +109,7 @@ bool ListaDuplamenteEncadeada::inserirNaCabeca(std::string s)
     novo->getAnterior()->setProximo( novo );
     novo->getProximo()->setAnterior( novo );
 
-    ++this->quantidade;
+    this->quantidade++;
 
     return true;
 }
@@ -128,20 +132,21 @@ bool ListaDuplamenteEncadeada::inserirNaCauda(std::string s)
 
 bool ListaDuplamenteEncadeada::inserir(int i, std::string s)
 {    
-
-	if(this->buscar(s)==-1 && i<=this->quantidade+1){
+	//acho que eiji implementou permitindo repetições,
+	//testes indicam isso
+	if(i<=this->quantidade+1){
 		if(this->quantidade==0){
 			this->inserirNaCabeca(s);
 			return true;
 		} else{
 			No<std::string>* novo = new No<std::string>(s);
 			//tem que começar apontando pra cabeça pra usar o getProximo()
-			No<std::string>* noPercorrendo = this->cabeca;
+			No<std::string>* noPercorrendo = this->cabeca->getProximo();
 			int contador = 1;
-			while(noPercorrendo->getProximo() != this->cauda){
+			while(noPercorrendo != this->cauda){
 				if(contador==i){
-					novo->setAnterior(noPercorrendo);
-					novo->setProximo(noPercorrendo->getProximo());
+					novo->setAnterior(noPercorrendo->getAnterior());
+					novo->setProximo(noPercorrendo);
 
 					//esse trecho de código não funciona para inserir na 1 execução do codigo
 					novo->getAnterior()->setProximo(novo);
@@ -150,6 +155,7 @@ bool ListaDuplamenteEncadeada::inserir(int i, std::string s)
 					return true;
 				}
 				contador++;
+				noPercorrendo = noPercorrendo->getProximo();
 			}
 		}
 	}
@@ -158,18 +164,40 @@ bool ListaDuplamenteEncadeada::inserir(int i, std::string s)
 
 bool ListaDuplamenteEncadeada::inserirOrdenado(std::string s)
 {
+	    /*
+			partir do principio que a lista já se encontra ordenada
+			implementado do mesmo jeito de um insertion sort :)
+			Não lembro como eiji recomendou implementar isso aqui,
+			então vou adicionar o elemento previamente e depois
+			ordenar. Depois vejo como ele acha melhor fazer isso
+    	*/
+		this->inserirNaCauda(s);
+		No<std::string>* noAtual = this->cabeca->getProximo()->getProximo();
+		for(int i = 1; i<this->tamanho()+1;i++){
+			int j = i -1; //fim da parte ordenada
+			No<std::string>* noJota = noAtual->getAnterior();
+			//int novo = entrada[i];
+			std::string valorAtual = noAtual->getValor();
+			while(j>=0 && valorAtual<noJota->getValor()){ //while tambem é uma verificação, por isso melhor caso é só n
+				//entrada[j+1] = entrada[j]; //desloca elementos
+				//troca as posições de noJota e noJota + 1
+				j = j -1;
+			}
+			//entrada[j+1] = novo; //quando corrige o primeiro elemento ele fica negativo
+			noAtual->getProximo().			
+			noAtual = noAtual->getProximo();
+    	}
 	return true;
 }
 
 std::string ListaDuplamenteEncadeada::removerDaCabeca(void)
 {   
-	if(this->quantidade>1){
-		//ponteiro de no
+	if(this->quantidade>=1){
 		No<std::string>* noRemover = this->cabeca->getProximo();
 		std::string stringRemover = noRemover->getValor();
-		this->cabeca->setProximo(this->cabeca->getProximo()->getProximo());
-		this->cabeca->getProximo()->setAnterior(this->cabeca);
-		delete []noRemover;
+		noRemover->getProximo()->setAnterior(noRemover->getAnterior());
+		noRemover->getAnterior()->setProximo(noRemover->getProximo());
+		delete noRemover;
 		this->quantidade--;
 		return stringRemover;
 	}
@@ -178,13 +206,14 @@ std::string ListaDuplamenteEncadeada::removerDaCabeca(void)
 
 std::string ListaDuplamenteEncadeada::removerDaCauda(void)
 {    
-	if(this->quantidade>1){
+	if(this->quantidade>=1){
 		//ponteiro de no
 		No<std::string>* noRemover = this->cauda->getAnterior();
 		std::string stringRemover = noRemover->getValor();
-		this->cauda->setAnterior(this->cauda->getAnterior()->getAnterior());
-		this->cauda->getAnterior()->setProximo(this->cauda);
-		delete []noRemover;
+
+		noRemover->getProximo()->setAnterior(noRemover->getAnterior());
+		noRemover->getAnterior()->setProximo(noRemover->getProximo());
+		delete noRemover;
 		this->quantidade--;
 		return stringRemover;
 	}
@@ -193,16 +222,16 @@ std::string ListaDuplamenteEncadeada::removerDaCauda(void)
 
 std::string ListaDuplamenteEncadeada::remover(int i)
 {    
-	if(i<this->quantidade){
+	if(i<=this->quantidade && i>=1){
 		No<std::string>* noRemover = this->cabeca->getProximo();
 		int contador = 1;
-		while(noRemover->getProximo() != this->cauda){
+		while(noRemover != this->cauda){
 			if(contador==i){
 				noRemover->getProximo()->setAnterior(noRemover->getAnterior());
 				noRemover->getAnterior()->setProximo(noRemover->getProximo());
 				this->quantidade--;
 				std::string stringRemover = noRemover->getValor();
-				delete []noRemover;
+				delete noRemover;
 				return stringRemover;
 			}
 			contador++;
