@@ -19,13 +19,14 @@ TabelaHash::TabelaHash()
 }
 
 TabelaHash::TabelaHash(const unsigned long tamanho)
-{
+{ 
     this->tamanho = tamanho;
     iniciar();
 }
 
 void TabelaHash::iniciar()
 {
+    //ponteiro de ponteiro: entenda como um array de ponteiros
     this->tabela = new Par<std::string, string>*[ this->getTamanho() ];
     this->quantidade = 0;
     for( unsigned long i = 0; i < this->getTamanho(); i++ )
@@ -54,7 +55,15 @@ TabelaHash::~TabelaHash()
  */
 bool TabelaHash::inserir(const string chave, const string valor)
 {
-    throw chave + valor;
+    auto codigohash = this->preHash(chave);
+    //Par<std::string, std::string> *REMOVIDO = (Par<std::string,std::string>*)(-1);
+    if(this->cheia()){
+        return false;
+    }
+    this->tabela[codigohash] = new Par<std::string, std::string>(chave, valor);
+    this->quantidade++;
+    return true;
+
 }
 
 /**
@@ -62,7 +71,13 @@ bool TabelaHash::inserir(const string chave, const string valor)
  */
 std::string TabelaHash::buscar(const string chave)
 {
-    throw chave;
+    auto codigoHash = this->preHash(chave);
+    if(this->tabela[codigoHash] != nullptr && this->tabela[codigoHash]->getChave() == chave){
+        return this->tabela[codigoHash]->getValor();
+    } else{
+        return "NÃO ACHOU";
+    }
+        return "NÃO ACHOU";
 }
 
 /**
