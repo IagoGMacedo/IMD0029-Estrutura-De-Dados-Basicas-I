@@ -184,7 +184,7 @@ bool ListaDuplamenteEncadeada::inserirOrdenado(std::string s)
 				j = j -1;
 			}
 			//entrada[j+1] = novo; //quando corrige o primeiro elemento ele fica negativo
-			noAtual->getProximo().			
+			//noAtual->getProximo().			
 			noAtual = noAtual->getProximo();
     	}
 	return true;
