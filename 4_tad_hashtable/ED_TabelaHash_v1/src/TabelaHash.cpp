@@ -55,11 +55,11 @@ TabelaHash::~TabelaHash()
  */
 bool TabelaHash::inserir(const string chave, const string valor)
 {
-    auto codigohash = this->preHash(chave);
     //Par<std::string, std::string> *REMOVIDO = (Par<std::string,std::string>*)(-1);
     if(this->cheia()){
         return false;
     }
+    auto codigohash = this->preHash(chave);
     this->tabela[codigohash] = new Par<std::string, std::string>(chave, valor);
     this->quantidade++;
     return true;
@@ -71,13 +71,14 @@ bool TabelaHash::inserir(const string chave, const string valor)
  */
 std::string TabelaHash::buscar(const string chave)
 {
+    if(this->vazia()){
+        return "TABELA VAZIA";
+    }
     auto codigoHash = this->preHash(chave);
     if(this->tabela[codigoHash] != nullptr && this->tabela[codigoHash]->getChave() == chave){
         return this->tabela[codigoHash]->getValor();
-    } else{
-        return "NÃO ACHOU";
-    }
-        return "NÃO ACHOU";
+    } 
+    return "NÃO ACHOU";
 }
 
 /**
@@ -86,7 +87,22 @@ std::string TabelaHash::buscar(const string chave)
  */
 bool TabelaHash::remover(const string chave)
 {
-    throw chave;
+    std::cout << "começou o metodo" << std::endl;
+
+    if(this->vazia()){
+        return false;
+    }
+    auto hashValue = this->preHash(chave);
+        std::cout << "entrou na condição" << std::endl;
+        std::cout << "valor da chave:" << this->tabela[hashValue]->getChave() << std::endl;
+        Par<std::string, std::string> * removeItem = this->tabela[hashValue];
+        this->tabela[hashValue] = REMOVIDO;
+        this->quantidade--;
+        delete removeItem;
+        return true;
+    std::cout << "fim do metodo" << std::endl;
+   return false;
+    
 }
 
 unsigned long TabelaHash::preHash(const string chave)
