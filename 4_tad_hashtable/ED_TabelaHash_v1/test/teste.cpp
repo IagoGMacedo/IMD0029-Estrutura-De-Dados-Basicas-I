@@ -1,5 +1,6 @@
 #include "../lib/catch2/catch_amalgamated.hpp"
 #include "../include/TabelaHash.h"
+#include <iostream>
 
 TEST_CASE("Tabela Hash - Teste do Construtor") 
 {
@@ -129,14 +130,14 @@ TEST_CASE("Tabela Hash - Teste de Inserir com Colisões, Remoções e Busca")
     CHECK( tabela.inserir(chave2, valor2) );    
     CHECK( tabela.inserir(chave3, valor3) );
     CHECK( tabela.inserir(chave4, valor4) ); 
-
+    std::cout << "inseriu tudo sem erro" << std::endl;
     CHECK( tabela.remover(chave1) );
     auto removeu2 = tabela.remover(chave2);
     CHECK( removeu2 );
-
+    std::cout << "removeu tudo sem erro" << std::endl;
     auto buscado4 = tabela.buscar(chave4);
     CHECK( buscado4 == valor4 );
-
+    std::cout << "buscou tudo sem erro" << std::endl;
     CHECK(tabela.verificarDuplicatas());
 }
 

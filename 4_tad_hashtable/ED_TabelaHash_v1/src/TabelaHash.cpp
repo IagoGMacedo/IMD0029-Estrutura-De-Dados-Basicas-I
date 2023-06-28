@@ -50,20 +50,44 @@ TabelaHash::~TabelaHash()
 }
 
 /**
- Este método deve inserir na tabela um novo Par com 'chave' e 'valor' recebidos como parâmetros. Neste caso, a quantidade de itens na tabela deve ser incrementada e retorna-se 'true'.
+ Este método deve   na tabela um novo Par com 'chave' e 'valor' recebidos como parâmetros. Neste caso, a quantidade de itens na tabela deve ser incrementada e retorna-se 'true'.
  Caso já exista um Par com atributo 'chave' == parâmetro 'chave', deve apenas atualizar o atributo 'valor' do Par. Neste caso, a quantidade de itens na tabela não é modificada e retorna-se 'true'.
  */
 bool TabelaHash::inserir(const string chave, const string valor)
 {
-    //Par<std::string, std::string> *REMOVIDO = (Par<std::string,std::string>*)(-1);
     if(this->cheia()){
         return false;
     }
-    auto codigohash = this->preHash(chave);
+    auto codigohash = this->hash(chave);
+    int deslocamento = 1;
+    while(this->tabela[codigohash] != nullptr && this->tabela[codigohash] != REMOVIDO){
+        if(this->tabela[codigohash]->getChave() == chave){
+            //atualiza
+            this->tabela[codigohash]->setValor(valor);
+            return true;
+        }
+        codigohash = (codigohash+deslocamento) % this->getTamanho();
+        std::cout << "novo cod: "<< codigohash << std::endl;
+        deslocamento++;
+    }
     this->tabela[codigohash] = new Par<std::string, std::string>(chave, valor);
     this->quantidade++;
     return true;
-
+    /*
+    int deslocamento = 0;
+    for(int i = ((codigohash+deslocamento)%this->getTamanho()); i < this->getTamanho(); deslocamento++){
+        if(this->tabela[i] == nullptr || this->tabela[i] == REMOVIDO){
+            this->tabela[i] = new Par<std::string, std::string>(chave, valor);
+            this->quantidade++;
+            return true;
+        } else if(this->tabela[i]->getChave() == chave){
+            this->tabela[i]->setValor(valor);
+            this->quantidade++;
+            return true;
+        }
+    }
+    return false;
+    */
 }
 
 /**
@@ -74,10 +98,21 @@ std::string TabelaHash::buscar(const string chave)
     if(this->vazia()){
         return "TABELA VAZIA";
     }
-    auto codigoHash = this->preHash(chave);
-    if(this->tabela[codigoHash] != nullptr && this->tabela[codigoHash]->getChave() == chave){
-        return this->tabela[codigoHash]->getValor();
-    } 
+    auto codigohash = this->hash(chave);
+    int deslocamento = 1;
+    //talvez aqui seja melhor usar um for
+    /*
+    while(this->tabela[codigohash] != nullptr && this->tabela[codigohash] != REMOVIDO && this->tabela[codigohash]->getChave() != chave){
+        codigohash = (codigohash+deslocamento) % this->getTamanho();
+        deslocamento++;
+    }
+    */
+    for(int i = codigohash;i<this->getTamanho();i++){
+        if(this->tabela[i] != nullptr && this->tabela[i] != REMOVIDO && this->tabela[i]->getChave() == chave){
+            return this->tabela[i]->getValor();
+        }
+    }
+     
     return "NÃO ACHOU";
 }
 
@@ -92,15 +127,30 @@ bool TabelaHash::remover(const string chave)
     if(this->vazia()){
         return false;
     }
-    auto hashValue = this->preHash(chave);
-        std::cout << "entrou na condição" << std::endl;
-        std::cout << "valor da chave:" << this->tabela[hashValue]->getChave() << std::endl;
-        Par<std::string, std::string> * removeItem = this->tabela[hashValue];
-        this->tabela[hashValue] = REMOVIDO;
-        this->quantidade--;
-        delete removeItem;
-        return true;
+    auto hashValue = this->hash(chave);
+    int deslocamento = 1;
+    
+    for(int i = hashValue; i<this->getTamanho();i++){
+        if(this->tabela[i] != nullptr && this->tabela[i] != REMOVIDO &&  this->tabela[i]->getChave() == chave){
+            Par<std::string, std::string> * removeItem = this->tabela[i];
+            this->tabela[i] = REMOVIDO;
+            this->quantidade--;
+            delete removeItem;
+            return true;
+        }
+    }
+    /*
+    while(this->tabela[hashValue]!=nullptr && this->tabela[hashValue]->getChave() != chave){
+        hashValue = (hashValue+deslocamento)%this->getTamanho();
+        deslocamento++;
+    }
+    Par<std::string, std::string> * removeItem = this->tabela[hashValue];
+    this->tabela[hashValue] = REMOVIDO;
+    this->quantidade--;
+    delete removeItem;
+    return true;
     std::cout << "fim do metodo" << std::endl;
+    */
    return false;
     
 }
@@ -112,7 +162,7 @@ unsigned long TabelaHash::preHash(const string chave)
     {
         // Não mudar!
         // Coloquei propositalmente uma versão simples pra facilitar a criação de colisões nos testes!
-        x += chave.at(i);
+        x += chave[i];
     }
     return x;
 }
