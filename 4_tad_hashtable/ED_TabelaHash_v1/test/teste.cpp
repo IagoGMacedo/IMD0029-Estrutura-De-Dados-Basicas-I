@@ -198,4 +198,5 @@ TEST_CASE("Tabela Hash - Teste de Inserir-Atualizar com remoções no meio")
     CHECK(tabela.buscar(chave5) == novoValor);
 
     CHECK(tabela.verificarDuplicatas());
+    tabela.imprimir();
 }
