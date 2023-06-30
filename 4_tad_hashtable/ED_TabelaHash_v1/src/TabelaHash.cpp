@@ -58,6 +58,7 @@ bool TabelaHash::inserir(const string chave, const string valor)
     if(this->cheia()){
         return false;
     }
+    /*
     auto codigohash = this->hash(chave);
     int deslocamento = 1;
     while(this->tabela[codigohash] != nullptr && this->tabela[codigohash] != REMOVIDO){
@@ -72,7 +73,21 @@ bool TabelaHash::inserir(const string chave, const string valor)
     }
     this->tabela[codigohash] = new Par<std::string, std::string>(chave, valor);
     this->quantidade++;
-    return true;
+    return true; */
+    auto indiceBase = this->hash(chave);
+    for(std::size_t delta = 0; delta<this->getTamanho();delta++){
+        auto indiceAtual = (indiceBase + delta) % this->getTamanho();
+        if(this->tabela[indiceAtual]==nullptr){
+            tabela[indiceAtual] = new Par<std::string, std::string>(chave, valor);;
+            this->quantidade++;
+            return true;
+        } else if(this->tabela[indiceAtual] != REMOVIDO && this->tabela[indiceAtual]->getChave() == chave){
+            this->tabela[indiceAtual]->setValor(valor);
+            return true;
+        }
+    }
+    return false;
+
     /*
     int deslocamento = 0;
     for(int i = ((codigohash+deslocamento)%this->getTamanho()); i < this->getTamanho(); deslocamento++){
