@@ -78,7 +78,7 @@ bool TabelaHash::inserir(const string chave, const string valor)
     for(std::size_t delta = 0; delta<this->getTamanho();delta++){
         auto indiceAtual = (indiceBase + delta) % this->getTamanho();
         if(this->tabela[indiceAtual]==nullptr){
-            tabela[indiceAtual] = new Par<std::string, std::string>(chave, valor);;
+            tabela[indiceAtual] = new Par<std::string, std::string>(chave, valor);
             this->quantidade++;
             return true;
         } else if(this->tabela[indiceAtual] != REMOVIDO && this->tabela[indiceAtual]->getChave() == chave){
