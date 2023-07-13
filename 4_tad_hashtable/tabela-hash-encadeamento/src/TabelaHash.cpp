@@ -36,16 +36,78 @@ TabelaHash::~TabelaHash()
 
 bool TabelaHash::inserir(const std::string& chave, const std::string* valor)
 {
-    return chave == "" || *valor == "";
+    std::size_t indiceBase = this->hash(chave);
+    if(this->tabela[indiceBase] == nullptr){
+        Elemento* novoElemento = new Elemento(chave, valor);
+        this->tabela[indiceBase] = novoElemento;
+        this->quantidade++;
+        return true;
+    } else{
+        Elemento * pAuxiliar = this->tabela[indiceBase];
+        while(pAuxiliar != nullptr){
+            if(pAuxiliar->getChave() == chave){
+                pAuxiliar->setValor(valor);
+                return true;
+            }
+            pAuxiliar = pAuxiliar->getProximo();
+        }
+        Elemento* novoElemento = new Elemento(chave, valor);
+        novoElemento->setProximo(this->tabela[indiceBase]);
+        this->tabela[indiceBase] = novoElemento;
+        this->quantidade++;
+        return true;
+    }
+    
 }
 
 const std::string* TabelaHash::buscar(const std::string& chave)
 {
-    return nullptr;
+    std::size_t indiceBase = this->hash(chave);
+    if(this->tabela[indiceBase] == nullptr){
+        return nullptr;
+    }else{
+        Elemento * pAuxiliar = this->tabela[indiceBase];
+        while(pAuxiliar != nullptr){
+            if(pAuxiliar->getChave() == chave){
+                return pAuxiliar->getValor();
+            }
+            pAuxiliar = pAuxiliar->getProximo();
+        }
+        return nullptr;
+    }
 }
 
 bool TabelaHash::remover(const std::string& chave)
 {
+    std::size_t indiceBase = this->hash(chave);
+    if(this->tabela[indiceBase] == nullptr){
+        return false;
+    }else{
+        Elemento * pAuxiliar = this->tabela[indiceBase];
+        Elemento * pAuxiliar2 = pAuxiliar;
+        Elemento * pRemover;
+        while(pAuxiliar != nullptr){
+            if(pAuxiliar->getChave() == chave){
+                if(pAuxiliar2==pAuxiliar){
+                    //primeiro caso
+                    if(pAuxiliar->getProximo() != nullptr){
+                        this->tabela[indiceBase] = pAuxiliar->getProximo();
+                    } else{
+                        this->tabela[indiceBase] = nullptr;
+                    }
+                } else{
+                    //diferente, anterior
+                    pAuxiliar2->setProximo(pAuxiliar->getProximo());
+                }
+                pRemover = pAuxiliar;
+                this->quantidade--;
+                delete pRemover;
+                return true;
+            }
+            pAuxiliar2 = pAuxiliar; //sempre eh o anterior
+            pAuxiliar = pAuxiliar->getProximo();
+        }
+    }
     return false;
 }
 
@@ -69,6 +131,34 @@ void TabelaHash::diminuir()
 
 void TabelaHash::redimensionar(const std::size_t& tamanhoNovo)
 {
+    Elemento** dadosNovo = new Elemento*[tamanhoNovo];
+    std::size_t tamanhoVelho =  this->tamanho;
+    this->setTamanho(tamanhoNovo);
+    Elemento** dadosVelho = this->tabela;
+    Elemento* pAuxiliar;
+    Elemento* pAuxiliar2;
+
+    for(std::size_t i =0 ;i<tamanhoVelho;i++){
+        if(dadosVelho[i] != nullptr){
+            pAuxiliar = dadosVelho[i];
+            while(pAuxiliar != nullptr){
+                pAuxiliar2 = pAuxiliar;
+                pAuxiliar = pAuxiliar->getProximo();
+                std::size_t indice = this->hash(pAuxiliar2->getChave());
+                if(dadosNovo[indice]==nullptr){
+                    dadosNovo[indice] = pAuxiliar2;
+                    dadosNovo[indice]->setProximo(nullptr);
+                } else{
+                    pAuxiliar2->setProximo(dadosNovo[indice]);
+                    dadosNovo[indice] = pAuxiliar2;
+                }
+
+            }
+        }
+    }
+    delete this->tabela;
+    this->tabela = dadosNovo;
+    this->setTamanho(tamanhoNovo);
     return;
 }
 
