@@ -37,8 +37,8 @@ TabelaHash::~TabelaHash()
 bool TabelaHash::inserir(const std::string& chave, const std::string* valor)
 {
     std::size_t indiceBase = this->hash(chave);
+    Elemento* novoElemento = new Elemento(chave, valor);
     if(this->tabela[indiceBase] == nullptr){
-        Elemento* novoElemento = new Elemento(chave, valor);
         this->tabela[indiceBase] = novoElemento;
         this->quantidade++;
         return true;
@@ -51,13 +51,11 @@ bool TabelaHash::inserir(const std::string& chave, const std::string* valor)
             }
             pAuxiliar = pAuxiliar->getProximo();
         }
-        Elemento* novoElemento = new Elemento(chave, valor);
         novoElemento->setProximo(this->tabela[indiceBase]);
         this->tabela[indiceBase] = novoElemento;
         this->quantidade++;
         return true;
     }
-    
 }
 
 const std::string* TabelaHash::buscar(const std::string& chave)
@@ -90,11 +88,7 @@ bool TabelaHash::remover(const std::string& chave)
             if(pAuxiliar->getChave() == chave){
                 if(pAuxiliar2==pAuxiliar){
                     //primeiro caso
-                    if(pAuxiliar->getProximo() != nullptr){
                         this->tabela[indiceBase] = pAuxiliar->getProximo();
-                    } else{
-                        this->tabela[indiceBase] = nullptr;
-                    }
                 } else{
                     //diferente, anterior
                     pAuxiliar2->setProximo(pAuxiliar->getProximo());
@@ -135,6 +129,7 @@ void TabelaHash::redimensionar(const std::size_t& tamanhoNovo)
     std::size_t tamanhoVelho =  this->tamanho;
     this->setTamanho(tamanhoNovo);
     Elemento** dadosVelho = this->tabela;
+
     Elemento* pAuxiliar;
     Elemento* pAuxiliar2;
 
@@ -152,14 +147,11 @@ void TabelaHash::redimensionar(const std::size_t& tamanhoNovo)
                     pAuxiliar2->setProximo(dadosNovo[indice]);
                     dadosNovo[indice] = pAuxiliar2;
                 }
-
             }
         }
     }
     delete this->tabela;
     this->tabela = dadosNovo;
-    this->setTamanho(tamanhoNovo);
-    return;
 }
 
 std::size_t TabelaHash::preHash(const std::string& chave)
