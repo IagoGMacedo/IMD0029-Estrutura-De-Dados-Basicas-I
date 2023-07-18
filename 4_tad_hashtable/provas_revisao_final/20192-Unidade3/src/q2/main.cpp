@@ -12,7 +12,18 @@
 using namespace std;
 
 bool twoSum(int array[], int arraySize, int k){
-    
+    Set<int> set = * new Set<int>();
+    for(int i =0;i<arraySize;i++){
+        set.insert(array[i]);
+    }
+    for(int i =0;i<arraySize;i++){
+        int valorAtual = array[i];
+        int valorRestante = k-valorAtual;
+        if(set.contains(valorRestante)){
+            return true;
+        }
+    }
+    return false;
 }
 
 int main(int argc, const char * argv[]) {

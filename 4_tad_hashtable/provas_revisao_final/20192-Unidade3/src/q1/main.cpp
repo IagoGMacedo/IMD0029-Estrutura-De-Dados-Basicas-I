@@ -15,6 +15,13 @@ Dictionary<string, int>* buildMultiSet(string array[], int arraySize){
     Dictionary<string, int>* d = new Dictionary<string, int>();
     // Implemente sua solução aqui
     // Veja a observação no enunciado
+    for(int i =0;i<arraySize;i++){
+        if(!d->contains(array[i] )){
+            d->put(array[i], 1);
+        } else{
+            d->put(array[i], 1+d->get(array[i]));
+        }
+    }
     return d;
 }
 

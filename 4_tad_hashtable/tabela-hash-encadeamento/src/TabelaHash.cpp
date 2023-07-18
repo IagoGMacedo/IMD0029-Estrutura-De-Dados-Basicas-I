@@ -127,11 +127,14 @@ void TabelaHash::redimensionar(const std::size_t& tamanhoNovo)
 {
     Elemento** dadosNovo = new Elemento*[tamanhoNovo];
     std::size_t tamanhoVelho =  this->tamanho;
+    for(int i =0;i<tamanhoVelho;i++){
+        dadosNovo[i] = nullptr;
+    }
     this->setTamanho(tamanhoNovo);
     Elemento** dadosVelho = this->tabela;
 
-    Elemento* pAuxiliar;
-    Elemento* pAuxiliar2;
+    Elemento* pAuxiliar; //pra percorrer as listas
+    Elemento* pAuxiliar2; //pra inserir
 
     for(std::size_t i =0 ;i<tamanhoVelho;i++){
         if(dadosVelho[i] != nullptr){
